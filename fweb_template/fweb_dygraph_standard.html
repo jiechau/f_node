@@ -1,0 +1,171 @@
+<html>
+<head>
+<link rel="stylesheet" href="dygraph.css" />
+<script type="text/javascript" src="dygraph.js"></script>
+<script type="text/javascript" src="synchronizer.js"></script>
+<script type="text/javascript" src="xyfunction.js"></script>
+</head>
+<body>
+
+	<div id="gdiv1"
+	style="width:1000px; height:250px;"></div>
+	<div id="ldiv1"
+	style="width:200px; height:250px;  position:absolute; top:0; left:1010"></div>
+  
+	<div id="dummydiv0"
+	style="width:1000px; height:10px;"></div>
+	
+	<div id="gdiv2"
+	style="width:1000px; height:250px;"></div>
+	<div id="ldiv2"
+	style="width:200px; height:250px; position:absolute; top:260; left:1010"></div>
+	
+	<div id="dummydiv1"
+	style="width:1000px; height:10px;"></div>
+	
+	<div id="textdiv1"
+	style="width:500px"></div>
+	<div id="textdiv2"
+	style="width:500px; position:absolute; top:520; left:500"></div>
+	
+  
+<script type="text/javascript">
+	 
+      g = new Dygraph(
+            document.getElementById("gdiv1"),
+            "/dygraph_data1.csv", // var
+            {
+                title: title1, // var
+				legend: 'always',
+                labels: labels1, // var
+				labelsDiv: document.getElementById("ldiv1"),
+				labelsSeparateLines : true, // add <br/>
+				series: {
+					"VOLz": {				// 除非他叫 VOLz
+					axis: 'y2',
+					plotter: barChartPlotter
+					}
+                }, // var
+				highlightCircleSize: 2,
+				strokeWidth: 1,
+				strokeBorderWidth:1,
+				highlightSeriesOpts: {
+					strokeWidth: 3,
+					strokeBorderWidth: 1,
+					highlightCircleSize: 5
+				},
+                axes : {
+					x: {
+						axisLabelWidth: 100,
+						valueFormatter: xfunction1, // var
+						axisLabelFormatter: xfunction1 // var
+					},
+					y : {
+						valueFormatter: function(y, opts, series_name) {
+							// var unscaled = y * scales1[series_name];
+							var unscaled = yscales1(y, series_name); // var
+							return unscaled;
+						}
+					},
+					y2: {			      
+					}
+                }
+            }
+        );
+
+      g_orig = new Dygraph(
+            document.getElementById("gdiv2"),
+   			"/dygraph_data2.csv", // var
+            {
+				title: title2, // var
+                legend: 'always',
+                labels: labels2, // var
+				labelsDiv: document.getElementById("ldiv2"),
+				labelsSeparateLines : true,
+				series: {
+					"VOLz": {				// 除非他叫 VOLz
+					axis: 'y2',
+					plotter: barChartPlotter
+					}
+                }, // var
+				highlightCircleSize: 2,
+				strokeWidth: 1,
+				strokeBorderWidth:1,
+				highlightSeriesOpts: {
+					strokeWidth: 3,
+					strokeBorderWidth: 1,
+					highlightCircleSize: 5
+				},
+                axes: {
+					x: {
+						axisLabelWidth: 100,
+						valueFormatter: xfunction2, // var
+						axisLabelFormatter: xfunction2 // var
+					},
+					y : {
+						valueFormatter: function(y, opts, series_name) {
+							// var unscaled = y * scales1[series_name];
+							var unscaled = yscales2(y, series_name); // var
+							return unscaled;
+						}	
+					},
+					y2: {
+					}
+                }
+            }
+        );
+	
+	// 參考說明 http://dygraphs.com/src/extras/synchronizer.js
+	var sync = Dygraph.synchronize(g, g_orig, {
+		selection: true,
+		zoom: true,
+		range: false
+	});
+	
+	// 目前固定在, 如果數列名稱是 VOLz 的話, 就畫 柱狀圖
+	// 柱狀圖 http://dygraphs.com/tests/plotters.html
+	function barChartPlotter(e) {
+        var ctx = e.drawingContext;
+        var points = e.points;
+        var y_bottom = e.dygraph.toDomYCoord(0);
+
+        ctx.fillStyle = darkenColor(e.color);
+
+        // Find the minimum separation between x-values.
+        // This determines the bar width.
+        var min_sep = Infinity;
+        for (var i = 1; i < points.length; i++) {
+          var sep = points[i].canvasx - points[i - 1].canvasx;
+          if (sep < min_sep) min_sep = sep;
+        }
+        var bar_width = Math.floor(2.0 / 3 * min_sep);
+
+        // Do the actual plotting.
+        for (var i = 0; i < points.length; i++) {
+          var p = points[i];
+          var center_x = p.canvasx;
+
+          ctx.fillRect(center_x - bar_width / 2, p.canvasy,
+              bar_width, y_bottom - p.canvasy);
+
+          ctx.strokeRect(center_x - bar_width / 2, p.canvasy,
+              bar_width, y_bottom - p.canvasy);
+        }
+	}
+
+    // Darken a color
+    function darkenColor(colorStr) {
+      // Defined in dygraph-utils.js
+      var color = Dygraph.toRGB_(colorStr);
+      color.r = Math.floor((255 + color.r) / 2);
+      color.g = Math.floor((255 + color.g) / 2);
+      color.b = Math.floor((255 + color.b) / 2);
+      return 'rgb(' + color.r + ',' + color.g + ',' + color.b + ')';
+    }	
+
+</script>
+
+<script type="text/javascript" src="textdiv.js"></script>
+
+</body>
+</html>
