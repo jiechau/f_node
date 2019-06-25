@@ -1,4 +1,15 @@
-tools for taifex option
+# Objective:
+1.Grab Futures/Options data from Taiwan Futures Exchange (https://www.taifex.com.tw/enl/eIndex) to csv text file.  
+2.Plot Futures/OPtions charts, there is an example: http://128.199.201.92:40000/  
+
+You don't really need the fweb_* codes (programs to plot the stock/futures/options charts). The most important objective of this project is to crab data and store in plain text file, in CSV format. From there you can utilize and do all the analyses you want, even test your own strategy (with your own program of course) 
+
+Once setup correctly, this program runs automatically. 
+
+P.S. codes were migrated from bitbucket, and were originally managed by mercurial, not git.
+
+
+#
 
 # # root:
 
